@@ -60,14 +60,14 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // ⚠️ СЮДА ВСТАВЬ СВОЙ КОНФИГ ИЗ FIREBASE
+        // Твой конфиг Firebase
         const firebaseConfig = {
-            apiKey: "ТВОЙ_API_KEY",
-            authDomain: "ТВОЙ_AUTH_DOMAIN",
-            projectId: "ТВОЙ_PROJECT_ID",
-            storageBucket: "ТВОЙ_STORAGE_BUCKET",
-            messagingSenderId: "ТВОЙ_SENDER_ID",
-            appId: "ТВОЙ_APP_ID"
+            apiKey: "AIzaSyDpLmrExe1ea7ubb_qcTYUk3GLZknLoglw",
+            authDomain: "payworld-42e23.firebaseapp.com",
+            projectId: "payworld-42e23",
+            storageBucket: "payworld-42e23.firebasestorage.app",
+            messagingSenderId: "573548544025",
+            appId: "1:573548544025:web:1d1ffc278f10b2a7ae6a88"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -90,7 +90,7 @@
                 document.getElementById('author').value = '';
             } catch (e) {
                 console.error("Ошибка: ", e);
-                alert("Ошибка при отправке. Проверь консоль.");
+                alert("Ошибка при отправке. Проверь консоль (F12).");
             }
         }
 
