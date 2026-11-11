@@ -12,8 +12,23 @@
             background-image: radial-gradient(circle at top, #1b2a3d, #0f0f0f 60%);
         }
         h1 { font-size: 2.5rem; text-align: center; margin-bottom: 10px; background: -webkit-linear-gradient(45deg, #00ccff, #3333ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        p.subtitle { color: #aaa; text-align: center; margin-bottom: 30px; font-size: 0.9rem; }
+        p.subtitle { color: #aaa; text-align: center; margin-bottom: 20px; font-size: 0.9rem; }
         
+        /* СТИЛЬ ДЛЯ ПРЕДУПРЕЖДЕНИЯ */
+        .warning-box {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            color: #ffc107;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            max-width: 500px;
+            width: 100%;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+        .warning-box b { color: #ffc107; }
+
         .form-container {
             background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 15px; width: 100%; max-width: 500px; margin-bottom: 40px;
             border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px);
@@ -23,19 +38,26 @@
             background: #1a1a1a; color: #fff; font-size: 1rem; outline: none; transition: 0.3s;
         }
         input:focus, textarea:focus { border-color: #00ccff; }
-        button {
+        button.btn-submit {
             width: 100%; padding: 15px; border: none; border-radius: 8px; background: linear-gradient(45deg, #00ccff, #3333ff);
             color: #fff; font-size: 1rem; font-weight: bold; cursor: pointer; transition: 0.3s;
         }
-        button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 204, 255, 0.4); }
+        button.btn-submit:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 204, 255, 0.4); }
 
         .wall { width: 100%; max-width: 800px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
         .wish-card {
             background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1);
             display: flex; flex-direction: column; justify-content: space-between; animation: fadeIn 0.5s ease-out;
         }
-        .wish-text { font-size: 1.1rem; margin-bottom: 15px; line-height: 1.5; }
-        .wish-author { font-size: 0.8rem; color: #888; text-align: right; font-style: italic; }
+        .wish-text { font-size: 1.1rem; margin-bottom: 10px; line-height: 1.5; }
+        .wish-author { font-size: 0.8rem; color: #888; text-align: right; font-style: italic; margin-bottom: 15px; }
+        
+        .btn-execute {
+            display: block; text-align: center; text-decoration: none; padding: 10px; border-radius: 8px;
+            background: rgba(0, 204, 255, 0.1); color: #00ccff; border: 1px solid #00ccff; font-weight: bold; font-size: 0.9rem;
+            transition: 0.3s;
+        }
+        .btn-execute:hover { background: #00ccff; color: #000; }
         
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -45,10 +67,19 @@
     <h1>PayWorld</h1>
     <p class="subtitle">Напиши, что ты хочешь. Анонимно или открыто. Вдруг кто-то богатый прочитает?</p>
 
+    <!-- БЛОК ПРЕДУПРЕЖДЕНИЯ -->
+    <div class="warning-box">
+        ⚠️ <b>Внимание! Остерегайтесь мошенников.</b><br>
+        Платформа PayWorld не несет ответственности за сделки между пользователями. 
+        Никогда не переводите предоплату незнакомцам. Используйте безопасные способы дарения (подарочные сертификаты, оплата при получении). 
+        Если кто-то просит перевести деньги на карту или по подозрительной ссылке — жалуйтесь нам.
+    </div>
+
     <div class="form-container">
         <input type="text" id="author" placeholder="Твое имя (или оставь пустым для анонимности)">
-        <textarea id="wishText" rows="3" placeholder="Чего ты хочешь? (Например: Хочу наушники AirPods)"></textarea>
-        <button onclick="addWish()">Опубликовать желание</button>
+        <input type="text" id="tgContact" placeholder="Твой Telegram для связи (например, @username) *">
+        <textarea id="wishText" rows="3" placeholder="Чего ты хочешь? (Например: Хочу наушники AirPods) *"></textarea>
+        <button class="btn-submit" onclick="addWish()">Опубликовать желание</button>
     </div>
 
     <div class="wall" id="wishWall">
@@ -60,7 +91,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Твой конфиг Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyDpLmrExe1ea7ubb_qcTYUk3GLZknLoglw",
             authDomain: "payworld-42e23.firebaseapp.com",
@@ -76,18 +106,24 @@
 
         window.addWish = async function() {
             const author = document.getElementById('author').value.trim() || "Аноним";
-            const text = document.getElementById('wishText').value.trim();
+            const wishText = document.getElementById('wishText').value.trim();
             
-            if(!text) { alert("Напиши хотя бы само желание!"); return; }
+            let tgContact = document.getElementById('tgContact').value.trim();
+            tgContact = tgContact.replace('@', ''); 
+
+            if(!wishText) { alert("Напиши хотя бы само желание!"); return; }
+            if(!tgContact) { alert("Пожалуйста, укажи свой Telegram, чтобы с тобой могли связаться!"); return; }
 
             try {
                 await addDoc(wishesRef, {
                     author: author,
-                    text: text,
+                    text: wishText,
+                    tg: tgContact,
                     createdAt: serverTimestamp()
                 });
                 document.getElementById('wishText').value = '';
                 document.getElementById('author').value = '';
+                document.getElementById('tgContact').value = '';
             } catch (e) {
                 console.error("Ошибка: ", e);
                 alert("Ошибка при отправке. Проверь консоль (F12).");
@@ -102,9 +138,15 @@
                 const data = doc.data();
                 const card = document.createElement('div');
                 card.className = 'wish-card';
+                
+                const tgLink = `https://t.me/${data.tg}`;
+
                 card.innerHTML = `
-                    <div class="wish-text">«${data.text}»</div>
-                    <div class="wish-author">— ${data.author}</div>
+                    <div>
+                        <div class="wish-text">«${data.text}»</div>
+                        <div class="wish-author">— ${data.author}</div>
+                    </div>
+                    <a href="${tgLink}" target="_blank" class="btn-execute">💬 Написать мне</a>
                 `;
                 wall.appendChild(card);
             });
