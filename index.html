@@ -3,90 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PayWorld — Стена Желаний</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <title>PayWorld — Исполни мечту</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Montserrat', sans-serif; }
         body {
-            background-color: #0f0f0f; color: #fff; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px;
+            background-color: #0f0f0f; color: #fff; min-height: 100vh;
             background-image: radial-gradient(circle at top, #1b2a3d, #0f0f0f 60%);
         }
-        h1 { font-size: 2.5rem; text-align: center; margin-bottom: 10px; background: -webkit-linear-gradient(45deg, #00ccff, #3333ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        p.subtitle { color: #aaa; text-align: center; margin-bottom: 20px; font-size: 0.9rem; }
-        
-        /* СТИЛЬ ДЛЯ ПРЕДУПРЕЖДЕНИЯ */
-        .warning-box {
-            background: rgba(255, 193, 7, 0.1);
-            border: 1px solid rgba(255, 193, 7, 0.3);
-            color: #ffc107;
-            padding: 15px;
-            border-radius: 10px;
-            font-size: 0.85rem;
-            max-width: 500px;
-            width: 100%;
-            margin-bottom: 20px;
-            line-height: 1.4;
-        }
-        .warning-box b { color: #ffc107; }
 
+        /* --- ШАПКА САЙТА --- */
+        header {
+            display: flex; justify-content: space-between; align-items: center; padding: 15px 20px;
+            background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .logo { font-size: 1.5rem; font-weight: 800; background: -webkit-linear-gradient(45deg, #00ccff, #3333ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; cursor: pointer; }
+        
+        .nav-buttons button {
+            background: none; border: none; color: #aaa; font-size: 0.9rem; font-weight: 600; cursor: pointer; margin-left: 15px; transition: 0.3s;
+        }
+        .nav-buttons button:hover, .nav-buttons button.active { color: #00ccff; }
+
+        /* --- КОНТЕЙНЕР ДЛЯ ЭКРАНОВ --- */
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        
+        .view { display: none; width: 100%; animation: fadeIn 0.4s ease-out; }
+        .view.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- ГЛАВНЫЙ ЭКРАН (ВЫБОР) --- */
+        .landing-title { font-size: 2.5rem; text-align: center; margin-top: 40px; margin-bottom: 10px; }
+        .landing-sub { color: #aaa; text-align: center; margin-bottom: 40px; font-size: 1rem; }
+        
+        .choice-grid { display: grid; grid-template-columns: 1fr; gap: 20px; max-width: 500px; margin: 0 auto; }
+        
+        .choice-card {
+            background: rgba(255, 255, 255, 0.05); padding: 30px; border-radius: 20px; text-align: center; cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.1); transition: 0.3s;
+        }
+        .choice-card:hover { transform: translateY(-5px); border-color: #00ccff; box-shadow: 0 10px 20px rgba(0, 204, 255, 0.1); }
+        .choice-card.gift:hover { border-color: #ff00cc; box-shadow: 0 10px 20px rgba(255, 0, 204, 0.1); }
+        .choice-icon { font-size: 3rem; margin-bottom: 15px; }
+        .choice-title { font-size: 1.2rem; font-weight: 600; margin-bottom: 10px; }
+        .choice-desc { font-size: 0.9rem; color: #888; }
+
+        /* --- ФОРМА ЖЕЛАНИЯ --- */
         .form-container {
-            background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 15px; width: 100%; max-width: 500px; margin-bottom: 40px;
-            border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.05); padding: 25px; border-radius: 15px; width: 100%; max-width: 500px; margin: 0 auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         input, textarea {
-            width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #333;
+            width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 10px; border: 1px solid #333;
             background: #1a1a1a; color: #fff; font-size: 1rem; outline: none; transition: 0.3s;
         }
         input:focus, textarea:focus { border-color: #00ccff; }
         button.btn-submit {
-            width: 100%; padding: 15px; border: none; border-radius: 8px; background: linear-gradient(45deg, #00ccff, #3333ff);
+            width: 100%; padding: 15px; border: none; border-radius: 10px; background: linear-gradient(45deg, #00ccff, #3333ff);
             color: #fff; font-size: 1rem; font-weight: bold; cursor: pointer; transition: 0.3s;
         }
         button.btn-submit:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 204, 255, 0.4); }
 
-        .wall { width: 100%; max-width: 800px; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        /* --- СТЕНА ЖЕЛАНИЙ (ДЛЯ ДАРИТЕЛЕЙ) --- */
+        .wall { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
         .wish-card {
             background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex; flex-direction: column; justify-content: space-between; animation: fadeIn 0.5s ease-out;
+            display: flex; flex-direction: column; justify-content: space-between;
         }
-        .wish-text { font-size: 1.1rem; margin-bottom: 10px; line-height: 1.5; }
+        .wish-text { font-size: 1.1rem; margin-bottom: 10px; line-height: 1.4; }
         .wish-author { font-size: 0.8rem; color: #888; text-align: right; font-style: italic; margin-bottom: 15px; }
         
         .btn-execute {
-            display: block; text-align: center; text-decoration: none; padding: 10px; border-radius: 8px;
-            background: rgba(0, 204, 255, 0.1); color: #00ccff; border: 1px solid #00ccff; font-weight: bold; font-size: 0.9rem;
-            transition: 0.3s;
+            display: block; text-align: center; text-decoration: none; padding: 12px; border-radius: 10px;
+            background: rgba(0, 204, 255, 0.1); color: #00ccff; border: 1px solid #00ccff; font-weight: bold; font-size: 0.9rem; transition: 0.3s;
         }
         .btn-execute:hover { background: #00ccff; color: #000; }
-        
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- ПРЕДУПРЕЖДЕНИЕ --- */
+        .warning-box {
+            background: rgba(255, 193, 7, 0.1); border: 1px solid rgba(255, 193, 7, 0.3); color: #ffc107;
+            padding: 15px; border-radius: 10px; font-size: 0.8rem; margin-bottom: 20px; line-height: 1.4; width: 100%;
+        }
+
+        /* Адаптив для ПК */
+        @media (min-width: 600px) {
+            .choice-grid { grid-template-columns: 1fr 1fr; }
+        }
     </style>
 </head>
 <body>
 
-    <h1>PayWorld</h1>
-    <p class="subtitle">Напиши, что ты хочешь. Анонимно или открыто. Вдруг кто-то богатый прочитает?</p>
+    <!-- ШАПКА -->
+    <header>
+        <div class="logo" onclick="showView('landing')">PayWorld</div>
+        <div class="nav-buttons">
+            <button id="nav-wish" onclick="showView('wisher')">Загадать</button>
+            <button id="nav-gift" onclick="showView('gifter')">Исполнить</button>
+        </div>
+    </header>
 
-    <!-- БЛОК ПРЕДУПРЕЖДЕНИЯ -->
-    <div class="warning-box">
-        ⚠️ <b>Внимание! Остерегайтесь мошенников.</b><br>
-        Платформа PayWorld не несет ответственности за сделки между пользователями. 
-        Никогда не переводите предоплату незнакомцам. Используйте безопасные способы дарения (подарочные сертификаты, оплата при получении). 
-        Если кто-то просит перевести деньги на карту или по подозрительной ссылке — жалуйтесь нам.
+    <div class="container">
+
+        <!-- ЭКРАН 1: ГЛАВНАЯ (ВЫБОР) -->
+        <div id="view-landing" class="view active">
+            <h1 class="landing-title">Кто ты сегодня?</h1>
+            <p class="landing-sub">Ты можешь попросить о помощи или сам стать волшебником для кого-то.</p>
+            
+            <div class="choice-grid">
+                <div class="choice-card" onclick="showView('wisher')">
+                    <div class="choice-icon">🙏</div>
+                    <div class="choice-title">Я хочу попросить</div>
+                    <div class="choice-desc">Оставь свое желание на стене. Вдруг кто-то его увидит.</div>
+                </div>
+                <div class="choice-card gift" onclick="showView('gifter')">
+                    <div class="choice-icon">🎁</div>
+                    <div class="choice-title">Я хочу подарить</div>
+                    <div class="choice-desc">Посмотри, о чем мечтают люди, и исполни чью-то мечту.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ЭКРАН 2: ФОРМА ЖЕЛАНИЯ -->
+        <div id="view-wisher" class="view">
+            <h2 style="text-align:center; margin-bottom: 20px;">Оставить желание</h2>
+            
+            <div class="warning-box">
+                ⚠️ <b>Внимание!</b> Никогда не просите перевести деньги на карту. Просите конкретные вещи или используйте безопасные сервисы. Остерегайтесь мошенников.
+            </div>
+
+            <div class="form-container">
+                <input type="text" id="author" placeholder="Твое имя (или оставь пустым для анонимности)">
+                <input type="text" id="tgContact" placeholder="Твой Telegram для связи (например, @username) *">
+                <textarea id="wishText" rows="3" placeholder="Чего ты хочешь? (Например: Хочу наушники AirPods) *"></textarea>
+                <button class="btn-submit" onclick="addWish()">Опубликовать на стене</button>
+            </div>
+        </div>
+
+        <!-- ЭКРАН 3: СТЕНА ЖЕЛАНИЙ (ДЛЯ ДАРИТЕЛЕЙ) -->
+        <div id="view-gifter" class="view">
+            <h2 style="text-align:center; margin-bottom: 20px;">Стена желаний</h2>
+            <p style="text-align:center; color:#aaa; margin-bottom: 20px; font-size: 0.9rem;">Нажми на кнопку, чтобы написать человеку в Telegram.</p>
+            
+            <div class="wall" id="wishWall">
+                <!-- Сюда падают желания -->
+            </div>
+        </div>
+
     </div>
 
-    <div class="form-container">
-        <input type="text" id="author" placeholder="Твое имя (или оставь пустым для анонимности)">
-        <input type="text" id="tgContact" placeholder="Твой Telegram для связи (например, @username) *">
-        <textarea id="wishText" rows="3" placeholder="Чего ты хочешь? (Например: Хочу наушники AirPods) *"></textarea>
-        <button class="btn-submit" onclick="addWish()">Опубликовать желание</button>
-    </div>
-
-    <div class="wall" id="wishWall">
-        <!-- Сюда будут загружаться желания -->
-    </div>
-
-    <!-- Подключаем Firebase -->
+    <!-- FIREBASE И ЛОГИКА -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -104,6 +169,20 @@
         const db = getFirestore(app);
         const wishesRef = collection(db, "wishes");
 
+        // --- ЛОГИКА ПЕРЕКЛЮЧЕНИЯ ЭКРАНОВ ---
+        window.showView = function(viewName) {
+            // Скрываем все экраны
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            // Показываем нужный
+            document.getElementById(`view-${viewName}`).classList.add('active');
+            
+            // Красим активную кнопку в меню
+            document.querySelectorAll('.nav-buttons button').forEach(btn => btn.classList.remove('active'));
+            if(viewName === 'wisher') document.getElementById('nav-wish').classList.add('active');
+            if(viewName === 'gifter') document.getElementById('nav-gift').classList.add('active');
+        }
+
+        // --- ДОБАВЛЕНИЕ ЖЕЛАНИЯ ---
         window.addWish = async function() {
             const author = document.getElementById('author').value.trim() || "Аноним";
             const wishText = document.getElementById('wishText').value.trim();
@@ -121,19 +200,34 @@
                     tg: tgContact,
                     createdAt: serverTimestamp()
                 });
+                
+                // Очищаем форму
                 document.getElementById('wishText').value = '';
                 document.getElementById('author').value = '';
                 document.getElementById('tgContact').value = '';
+                
+                alert("Твое желание на стене! Теперь ты можешь переключиться на вкладку 'Исполнить' и посмотреть на других.");
+                
+                // Автоматически перекидываем на стену, чтобы показать результат
+                showView('gifter');
+                
             } catch (e) {
                 console.error("Ошибка: ", e);
                 alert("Ошибка при отправке. Проверь консоль (F12).");
             }
         }
 
+        // --- ЗАГРУЗКА СТЕНЫ ---
         const q = query(wishesRef, orderBy("createdAt", "desc"));
         onSnapshot(q, (snapshot) => {
             const wall = document.getElementById('wishWall');
             wall.innerHTML = '';
+            
+            if (snapshot.empty) {
+                wall.innerHTML = '<p style="text-align:center; color:#666; grid-column: 1/-1;">Пока желаний нет. Стань первым!</p>';
+                return;
+            }
+
             snapshot.forEach((doc) => {
                 const data = doc.data();
                 const card = document.createElement('div');
